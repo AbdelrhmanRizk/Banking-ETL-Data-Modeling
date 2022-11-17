@@ -1,0 +1,134 @@
+CREATE TABLE Dim_District
+(
+  DistrictID INT NOT NULL,
+  Division INT NOT NULL,
+  Region INT NOT NULL,
+  City INT NOT NULL,
+  StateName INT NOT NULL,
+  PRIMARY KEY (DistrictID)
+);
+
+CREATE TABLE Dim_Customer
+(
+  CustID INT NOT NULL,
+  FirstName INT NOT NULL,
+  LastName INT NOT NULL,
+  Gender INT NOT NULL,
+  Age INT NOT NULL,
+  Address INT NOT NULL,
+  PRIMARY KEY (CustID),
+  UNIQUE ()
+);
+
+CREATE TABLE Dim_Date
+(
+  DateKey INT NOT NULL,
+  Date INT NOT NULL,
+  WeekDay INT NOT NULL,
+  IsHolyday INT NOT NULL,
+  DayName INT NOT NULL,
+  PRIMARY KEY (DateKey)
+);
+
+CREATE TABLE Dim_Loan
+(
+  Purpose INT NOT NULL,
+  Status INT NOT NULL,
+  LoanID INT NOT NULL,
+  Location INT NOT NULL,
+  Duration INT NOT NULL,
+  FullDate INT NOT NULL,
+  PRIMARY KEY (LoanID)
+);
+
+CREATE TABLE Dim_Card
+(
+  CardID INT NOT NULL,
+  Type INT NOT NULL,
+  Fulldate INT NOT NULL,
+  PRIMARY KEY (CardID)
+);
+
+CREATE TABLE Dim_CallCenter
+(
+  ComplaintID INT NOT NULL,
+  DateRecived INT NOT NULL,
+  Phonefinal INT NOT NULL,
+  Server INT NOT NULL,
+  PRIMARY KEY (ComplaintID)
+);
+
+CREATE TABLE Dim_CRM_Reviews
+(
+  Date INT NOT NULL,
+  Reviews INT NOT NULL,
+  RID INT NOT NULL,
+  Product INT NOT NULL,
+  PRIMARY KEY (RID)
+);
+
+CREATE TABLE Dim_Account
+(
+  AccountId INT NOT NULL,
+  Freq INT NOT NULL,
+  OpenDate INT NOT NULL,
+  CardID INT NOT NULL,
+  PRIMARY KEY (AccountId),
+  FOREIGN KEY (CardID) REFERENCES Dim_Card(CardID)
+);
+
+CREATE TABLE Fact_Transaction
+(
+  TransactionID INT NOT NULL,
+  Amount INT NOT NULL,
+  FromBank INT NOT NULL,
+  ToBank INT NOT NULL,
+  Operation INT NOT NULL,
+  Transaction_Time INT NOT NULL,
+  LoanAmount INT NOT NULL,
+  LoanPayment INT NOT NULL,
+  DateKey INT NOT NULL,
+  CustID INT NOT NULL,
+  AccountId INT NOT NULL,
+  LoanID INT NOT NULL,
+  DistrictID INT NOT NULL,
+  PRIMARY KEY (TransactionID, DateKey, CustID, AccountId),
+  FOREIGN KEY (DateKey) REFERENCES Dim_Date(DateKey),
+  FOREIGN KEY (CustID) REFERENCES Dim_Customer(CustID),
+  FOREIGN KEY (AccountId) REFERENCES Dim_Account(AccountId),
+  FOREIGN KEY (LoanID) REFERENCES Dim_Loan(LoanID),
+  FOREIGN KEY (DistrictID) REFERENCES Dim_District(DistrictID)
+);
+
+CREATE TABLE DIm_CRM_Events
+(
+  Narrative INT NOT NULL,
+  DateSentToCompany INT NOT NULL,
+  DateReceived INT NOT NULL,
+  SubmittedVia INT NOT NULL,
+  Product INT NOT NULL,
+  SubProduct INT NOT NULL,
+  ComplaintID INT NOT NULL,
+  PRIMARY KEY (ComplaintID),
+  FOREIGN KEY (ComplaintID) REFERENCES Dim_CallCenter(ComplaintID)
+);
+
+CREATE TABLE Fact_CRM
+(
+  CompanyResponse INT NOT NULL,
+  TimelyResponse INT NOT NULL,
+  Outcome INT NOT NULL,
+  Stars INT NOT NULL,
+  Issue INT NOT NULL,
+  CustID INT NOT NULL,
+  RID INT NOT NULL,
+  DateKey INT NOT NULL,
+  DistrictID INT NOT NULL,
+  ComplaintID INT NOT NULL,
+  PRIMARY KEY (CustID, DateKey),
+  FOREIGN KEY (CustID) REFERENCES Dim_Customer(CustID),
+  FOREIGN KEY (RID) REFERENCES Dim_CRM_Reviews(RID),
+  FOREIGN KEY (DateKey) REFERENCES Dim_Date(DateKey),
+  FOREIGN KEY (DistrictID) REFERENCES Dim_District(DistrictID),
+  FOREIGN KEY (ComplaintID) REFERENCES DIm_CRM_Events(ComplaintID)
+);
